@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monde — Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cyan: #00f5ff;
+    --purple: #bf00ff;
+    --dark: #030610;
+    --grid: rgba(0,245,255,0.04);
+    --glass: rgba(0,245,255,0.06);
+    --border: rgba(0,245,255,0.18);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--dark);
+    color: #c8e8f0;
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* Animated grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridDrift 20s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes gridDrift {
+    0% { transform: perspective(600px) rotateX(0deg) translateY(0); }
+    100% { transform: perspective(600px) rotateX(0deg) translateY(60px); }
+  }
+
+  /* Scanline overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.05) 2px,
+      rgba(0,0,0,0.05) 4px
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .container {
+    position: relative;
+    z-index: 2;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 30px 40px;
+  }
+
+  /* ─── HEADER ─── */
+  .header {
+    text-align: center;
+    margin-bottom: 20px;
+    animation: fadeDown 0.9s ease both;
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .name {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(3rem, 10vw, 6rem);
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, var(--cyan) 0%, #ffffff 50%, var(--purple) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+    display: inline-block;
+    filter: drop-shadow(0 0 30px rgba(0,245,255,0.4));
+    animation: glitch 6s infinite;
+  }
+
+  @keyframes glitch {
+    0%, 90%, 100% { transform: none; filter: drop-shadow(0 0 30px rgba(0,245,255,0.4)); }
+    92% { transform: translate(-2px, 0) skewX(-1deg); filter: drop-shadow(3px 0 0 rgba(191,0,255,0.8)) drop-shadow(-3px 0 0 rgba(0,245,255,0.8)); }
+    94% { transform: translate(2px, 0) skewX(1deg); }
+    96% { transform: none; }
+  }
+
+  .corner { position: absolute; width: 14px; height: 14px; }
+  .corner.tl { top: 0; left: 0; border-top: 2px solid var(--cyan); border-left: 2px solid var(--cyan); }
+  .corner.tr { top: 0; right: 0; border-top: 2px solid var(--cyan); border-right: 2px solid var(--cyan); }
+  .corner.bl { bottom: 0; left: 0; border-bottom: 2px solid var(--cyan); border-left: 2px solid var(--cyan); }
+  .corner.br { bottom: 0; right: 0; border-bottom: 2px solid var(--cyan); border-right: 2px solid var(--cyan); }
+
+  /* ─── INTRO ─── */
+  .intro {
+    text-align: center;
+    margin-bottom: 70px;
+    animation: fadeDown 0.9s 0.2s ease both;
+  }
+
+  .intro-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--cyan);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin-bottom: 10px;
+  }
+
+  .intro-text {
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    font-weight: 300;
+    color: rgba(200,232,240,0.75);
+    letter-spacing: 0.06em;
+    line-height: 1.7;
+    max-width: 580px;
+    margin: 0 auto;
+    border-left: 2px solid var(--purple);
+    padding-left: 18px;
+    text-align: left;
+    position: relative;
+  }
+
+  .cursor-blink {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background: var(--cyan);
+    margin-left: 4px;
+    vertical-align: middle;
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+  /* ─── PROJECTS SECTION ─── */
+  .section-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.4em;
+    color: var(--cyan);
+    text-transform: uppercase;
+    opacity: 0.5;
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(1.1rem, 3vw, 1.6rem);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #fff;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+
+  .projects-section {
+    animation: fadeUp 0.9s 0.4s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Add project form */
+  .add-form {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .add-form::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    animation: scanH 3s linear infinite;
+  }
+
+  @keyframes scanH {
+    0% { opacity: 0; transform: translateX(-100%); }
+    50% { opacity: 1; }
+    100% { opacity: 0; transform: translateX(100%); }
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .form-row.full { grid-template-columns: 1fr; }
+
+  label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    color: var(--cyan);
+    opacity: 0.7;
+    display: block;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  input, textarea {
+    width: 100%;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: #c8e8f0;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    letter-spacing: 0.03em;
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: rgba(200,232,240,0.2);
+    font-size: 0.9rem;
+  }
+
+  input:focus, textarea:focus {
+    border-color: var(--cyan);
+    box-shadow: 0 0 12px rgba(0,245,255,0.12);
+  }
+
+  textarea { resize: vertical; min-height: 70px; }
+
+  .btn-add {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dark);
+    background: linear-gradient(135deg, var(--cyan), #00aadd);
+    border: none;
+    padding: 12px 28px;
+    border-radius: 2px;
+    cursor: crosshair;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 0 18px rgba(0,245,255,0.3);
+    float: right;
+  }
+
+  .btn-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 28px rgba(0,245,255,0.5);
+  }
+
+  .btn-add:active { transform: translateY(0); }
+
+  /* Project cards grid */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+    margin-top: 10px;
+  }
+
+  .project-card {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 22px 20px 18px;
+    position: relative;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+    animation: cardIn 0.4s ease both;
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: scale(0.92) translateY(14px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .project-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(0,245,255,0.4);
+    box-shadow: 0 8px 30px rgba(0,245,255,0.1), inset 0 1px 0 rgba(0,245,255,0.1);
+  }
+
+  .project-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--purple), var(--cyan));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+
+  .project-card:hover::after { transform: scaleX(1); }
+
+  .card-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--cyan);
+    opacity: 0.4;
+    letter-spacing: 0.2em;
+    margin-bottom: 10px;
+  }
+
+  .card-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+  }
+
+  .card-desc {
+    font-size: 0.9rem;
+    color: rgba(200,232,240,0.55);
+    line-height: 1.5;
+    margin-bottom: 16px;
+    font-weight: 300;
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .card-link {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--cyan);
+    text-decoration: none;
+    letter-spacing: 0.15em;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+
+  .card-link:hover { opacity: 1; text-decoration: underline; }
+
+  .btn-remove {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: rgba(255,80,80,0.5);
+    background: none;
+    border: 1px solid rgba(255,80,80,0.2);
+    border-radius: 2px;
+    padding: 3px 8px;
+    cursor: crosshair;
+    letter-spacing: 0.1em;
+    transition: all 0.2s;
+  }
+
+  .btn-remove:hover { color: #ff5050; border-color: rgba(255,80,80,0.6); }
+
+  /* empty state */
+  .empty-state {
+    text-align: center;
+    padding: 50px 20px;
+    border: 1px dashed var(--border);
+    border-radius: 4px;
+    color: rgba(200,232,240,0.25);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+  }
+
+  /* ─── FOOTER / DISCORD ─── */
+  .footer {
+    margin-top: 80px;
+    text-align: center;
+    animation: fadeUp 0.9s 0.6s ease both;
+  }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin-bottom: 40px;
+  }
+
+  .contact-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    color: var(--cyan);
+    opacity: 0.5;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .discord-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(88, 101, 242, 0.12);
+    border: 1px solid rgba(88, 101, 242, 0.35);
+    border-radius: 4px;
+    padding: 14px 28px;
+    transition: all 0.25s;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .discord-badge::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(88,101,242,0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .discord-badge:hover::before { opacity: 1; }
+  .discord-badge:hover { border-color: rgba(88, 101, 242, 0.7); box-shadow: 0 0 24px rgba(88,101,242,0.2); }
+
+  .discord-icon {
+    width: 24px;
+    height: 24px;
+    fill: #7289da;
+    flex-shrink: 0;
+  }
+
+  .discord-username {
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #fff;
+  }
+
+  .copy-hint {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: rgba(200,232,240,0.25);
+    letter-spacing: 0.2em;
+    margin-top: 10px;
+  }
+
+  .footer-bottom {
+    margin-top: 50px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    color: rgba(200,232,240,0.12);
+  }
+
+  /* hover glow on cursor */
+  .glow-cursor {
+    position: fixed;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,245,255,0.04) 0%, transparent 70%);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    transition: left 0.1s, top 0.1s;
+  }
+</style>
+</head>
+<body>
+
+<div class="glow-cursor" id="glowCursor"></div>
+
+<div class="container">
+
+  <!-- ── NAME ── -->
+  <div class="header">
+    <div style="display:inline-block; position:relative; padding: 10px 20px;">
+      <div class="corner tl"></div>
+      <div class="corner tr"></div>
+      <div class="corner bl"></div>
+      <div class="corner br"></div>
+      <div class="name">Monde</div>
+    </div>
+  </div>
+
+  <!-- ── INTRO ── -->
+  <div class="intro">
+    <div class="intro-tag">// identity.init()</div>
+    <p class="intro-text">
+      I'm Monde, a Python developer who builds things that actually matter. Bots, tools, scripts — if it solves a problem, I'm building it. I learn by doing, break things on purpose, and keep going until it works.<span class="cursor-blink"></span>
+    </p>
+  </div>
+
+  <!-- ── PROJECTS ── -->
+  <div class="projects-section">
+    <div class="section-label">// module: projects</div>
+    <div class="section-title">GitHub Projects</div>
+
+
+
+    <div class="projects-grid" id="projectsGrid">
+      <div class="empty-state" id="emptyState">NO PROJECTS LOADED — ADD YOUR FIRST ONE ABOVE</div>
+    </div>
+  </div>
+
+  <!-- ── FOOTER ── -->
+  <div class="footer">
+    <div class="divider"></div>
+    <div class="contact-label">// contact.reach()</div>
+    <div class="discord-badge" onclick="copyDiscord()" title="Click to copy">
+      <svg class="discord-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.032.054a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/>
+      </svg>
+      <span class="discord-username" id="discordName">itsjustmonde</span>
+    </div>
+    <div class="copy-hint" id="copyHint">CLICK TO COPY USERNAME</div>
+
+    <div class="footer-bottom">MONDE.DEV — SYSTEM ONLINE — 2025</div>
+  </div>
+
+</div>
+
+<script>
+  // Glow cursor
+  const cursor = document.getElementById('glowCursor');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+  });
+
+  let projects = [];
+
+  function setStatus(msg, color) {
+    const s = document.getElementById('fetchStatus');
+    s.textContent = msg;
+    s.style.color = color || 'rgba(0,245,255,0.6)';
+  }
+
+  async function addProject() {
+    const urlInput = document.getElementById('projUrl');
+    const raw = urlInput.value.trim();
+    if (!raw) { flashInput('projUrl'); return; }
+
+    // Parse github url
+    const match = raw.match(/github\.com\/([^\/]+)\/([^\/\s#?]+)/);
+    if (!match) {
+      setStatus('⚠ INVALID GITHUB URL', '#ff5050');
+      flashInput('projUrl');
+      return;
+    }
+
+    const [, owner, repo] = match;
+    const btn = document.getElementById('addBtn');
+    btn.textContent = 'FETCHING...';
+    btn.disabled = true;
+    setStatus('// CONNECTING TO GITHUB API...', 'rgba(0,245,255,0.5)');
+
+    try {
+      const res = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
+      if (!res.ok) throw new Error('Repo not found');
+      const data = await res.json();
+
+      projects.push({
+        id: Date.now(),
+        name: data.name,
+        fullName: data.full_name,
+        desc: data.description || '',
+        url: data.html_url,
+        stars: data.stargazers_count,
+        lang: data.language || null,
+        fork: data.fork
+      });
+
+      renderProjects();
+      urlInput.value = '';
+      setStatus(`✓ ${data.full_name} LOADED`, 'rgba(0,245,255,0.8)');
+      setTimeout(() => setStatus(''), 2500);
+    } catch(e) {
+      setStatus('⚠ REPO NOT FOUND OR PRIVATE', '#ff5050');
+    } finally {
+      btn.textContent = '+ ADD';
+      btn.disabled = false;
+    }
+  }
+
+  function flashInput(id) {
+    const el = document.getElementById(id);
+    el.style.borderColor = '#ff5050';
+    el.style.boxShadow = '0 0 12px rgba(255,80,80,0.3)';
+    setTimeout(() => { el.style.borderColor = ''; el.style.boxShadow = ''; }, 700);
+  }
+
+  function removeProject(id) {
+    projects = projects.filter(p => p.id !== id);
+    renderProjects();
+  }
+
+  function renderProjects() {
+    const grid = document.getElementById('projectsGrid');
+
+    if (projects.length === 0) {
+      grid.innerHTML = '<div class="empty-state">NO PROJECTS LOADED — PASTE A GITHUB URL ABOVE</div>';
+      return;
+    }
+
+    grid.innerHTML = '';
+    projects.forEach((p, i) => {
+      const card = document.createElement('div');
+      card.className = 'project-card';
+      card.innerHTML = `
+        <div class="card-num">PROJECT_${String(i + 1).padStart(3, '0')}${p.lang ? ` · <span style="color:var(--purple);opacity:0.8">${escHtml(p.lang)}</span>` : ''}</div>
+        <div class="card-title">${escHtml(p.name)}</div>
+        ${p.desc ? `<div class="card-desc">${escHtml(p.desc)}</div>` : ''}
+        <div class="card-footer">
+          <a class="card-link" href="${escHtml(p.url)}" target="_blank" rel="noopener">→ VIEW ON GITHUB ${p.stars > 0 ? `· ★ ${p.stars}` : ''}</a>
+          <button class="btn-remove" onclick="removeProject(${p.id})">REMOVE</button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // Discord copy
+  function copyDiscord() {
+    const name = document.getElementById('discordName').textContent;
+    navigator.clipboard.writeText(name).then(() => {
+      const hint = document.getElementById('copyHint');
+      hint.textContent = '✓ COPIED TO CLIPBOARD';
+      hint.style.color = 'rgba(0,245,255,0.6)';
+      setTimeout(() => {
+        hint.textContent = 'CLICK TO COPY USERNAME';
+        hint.style.color = '';
+      }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
